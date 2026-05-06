@@ -5,15 +5,7 @@
 #include <string>
 #include <vector>
 
-// ============================================================
-//  Movie — derived from Item
-//  Additional fields: title, director, mainActors (collection)
-// ============================================================
 class Movie : public Item {
-private:
-    std::string title;
-    std::string director;
-    std::vector<std::string> mainActors;
 
 public:
     Movie(const std::string& name,
@@ -28,6 +20,11 @@ public:
     std::vector<std::string> getMainActors() const;
 
     void print(std::ostream& os) const override;
+
+    private:
+    std::string title;
+    std::string director;
+    std::vector<std::string> mainActors;
 };
 
 #endif // MOVIE_H

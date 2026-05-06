@@ -4,14 +4,8 @@
 #include "Item.h"
 #include <string>
 
-// ============================================================
-//  Magazine — derived from Item
-//  Additional fields: edition, mainArticleTitle
-// ============================================================
+
 class Magazine : public Item {
-private:
-    int edition;
-    std::string mainArticleTitle;
 
 public:
     Magazine(const std::string& name,
@@ -20,10 +14,14 @@ public:
              int edition,
              const std::string& mainArticleTitle);
 
-    int         getEdition()          const;
+    int getEdition() const;
     std::string getMainArticleTitle() const;
 
     void print(std::ostream& os) const override;
+    
+    private:
+    int edition;
+    std::string mainArticleTitle;
 };
 
 #endif // MAGAZINE_H

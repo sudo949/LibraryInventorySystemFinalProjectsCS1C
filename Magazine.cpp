@@ -1,9 +1,5 @@
 #include "Magazine.h"
 
-// ============================================================
-//  Magazine — Implementations
-// ============================================================
-
 // Constructor: passes shared fields up to Item, sets Magazine-specific ones
 Magazine::Magazine(const std::string& name,
                    const std::string& description,
@@ -15,7 +11,7 @@ Magazine::Magazine(const std::string& name,
       mainArticleTitle(mainArticleTitle) {}
 
 // Getters
-int         Magazine::getEdition()          const { return edition; }
+int Magazine::getEdition() const { return edition; }
 std::string Magazine::getMainArticleTitle() const { return mainArticleTitle; }
 
 // Outputs all Magazine fields to the provided stream

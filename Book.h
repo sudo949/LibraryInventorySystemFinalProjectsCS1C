@@ -4,15 +4,8 @@
 #include "Item.h"
 #include <string>
 
-// ============================================================
-//  Book — derived from Item
-//  Additional fields: title, author, copyrightDate
-// ============================================================
+
 class Book : public Item {
-private:
-    std::string title;
-    std::string author;
-    int copyrightDate;
 
 public:
     Book(const std::string& name,
@@ -22,11 +15,18 @@ public:
          const std::string& author,
          int copyrightDate);
 
-    std::string getTitle()         const;
-    std::string getAuthor()        const;
-    int         getCopyrightDate() const;
+    std::string getTitle() const;
+    std::string getAuthor() const;
+    int getCopyrightDate() const;
 
+    // implement your own print...
     void print(std::ostream& os) const override;
+    
+    private:
+    std::string title;
+    std::string author;
+    int copyrightDate;
+
 };
 
 #endif // BOOK_H

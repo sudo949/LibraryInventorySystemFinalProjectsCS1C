@@ -1,9 +1,5 @@
 #include "Book.h"
 
-// ============================================================
-//  Book — Implementations
-// ============================================================
-
 // Constructor: passes shared fields up to Item, sets Book-specific ones
 Book::Book(const std::string& name,
            const std::string& description,
@@ -11,7 +7,9 @@ Book::Book(const std::string& name,
            const std::string& title,
            const std::string& author,
            int copyrightDate)
+// these are the Item base class unique attributes...
     : Item(name, description, id),
+// these attributes belong to the book object.
       title(title),
       author(author),
       copyrightDate(copyrightDate) {}
