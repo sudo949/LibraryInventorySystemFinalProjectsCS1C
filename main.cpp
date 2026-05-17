@@ -3,6 +3,7 @@
 #include "Book.h"
 #include "Movie.h"
 #include "Magazine.h"
+#include "Compartment.h"
 
 // ============================================================
 //  Part 1 Test Driver
