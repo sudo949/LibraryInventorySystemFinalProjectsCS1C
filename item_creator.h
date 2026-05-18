@@ -4,81 +4,34 @@
 #include "library_item.h"
 
 #include <memory>
-#include <string>
-#include <vector>
+#include <type_traits>
+#include <utility>
 
-class ItemCreator
+class ItemFactory
 {
 public:
-    virtual ~ItemCreator() = default;
-    virtual std::unique_ptr<Item> create_item() const = 0;
-};
+    static ItemFactory& instance()
+    {
+        static ItemFactory item_factory_instance;
+        return item_factory_instance;
+    }
 
-class BookCreator : public ItemCreator
-{
-public:
-    BookCreator(
-        const std::string& name,
-        const std::string& description,
-        int id,
-        const std::string& title,
-        const std::string& author,
-        int copyright_date
-    );
+    template <typename ItemType, typename... ConstructorArgs>
+    std::unique_ptr<Item> create_item(ConstructorArgs&&... constructor_args) const
+    {
+        static_assert(
+            std::is_base_of_v<Item, ItemType>,
+            "ItemFactory can only create classes derived from Item."
+        );
 
-    std::unique_ptr<Item> create_item() const override;
+        return std::make_unique<ItemType>(std::forward<ConstructorArgs>(constructor_args)...);
+    }
+
+    ItemFactory(const ItemFactory&) = delete;
+    ItemFactory& operator=(const ItemFactory&) = delete;
 
 private:
-    std::string _name;
-    std::string _description;
-    int _id;
-    std::string _title;
-    std::string _author;
-    int _copyright_date;
-};
-
-class MovieCreator : public ItemCreator
-{
-public:
-    MovieCreator(
-        const std::string& name,
-        const std::string& description,
-        int id,
-        const std::string& title,
-        const std::string& director,
-        const std::vector<std::string>& main_actors
-    );
-
-    std::unique_ptr<Item> create_item() const override;
-
-private:
-    std::string _name;
-    std::string _description;
-    int _id;
-    std::string _title;
-    std::string _director;
-    std::vector<std::string> _main_actors;
-};
-
-class MagazineCreator : public ItemCreator
-{
-public:
-    MagazineCreator(
-        const std::string& name,
-        const std::string& description,
-        int id,
-        int edition,
-        const std::string& main_article_title
-    );
-
-    std::unique_ptr<Item> create_item() const override;
-
-private:
-    std::string _name;
-    std::string _description;
-    int _id;
-    int _edition;
-    std::string _main_article_title;
+    ItemFactory() = default;
 };
 
 #endif // ITEM_CREATOR_H

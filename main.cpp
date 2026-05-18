@@ -1,6 +1,9 @@
+#include "book_item.h"
 #include "compartment_location.h"
 #include "item_creator.h"
 #include "library_storage.h"
+#include "magazine_item.h"
+#include "movie_item.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -22,63 +25,93 @@ int main()
 {
     LibraryStorage library_storage(3U);
 
-    BookCreator book_creator(
-        "The Great Gatsby",
-        "A novel set in the Jazz Age.",
-        101,
-        "The Great Gatsby",
-        "F. Scott Fitzgerald",
-        1925
-    );
-
-    MovieCreator movie_creator(
-        "Inception",
-        "A mind-bending thriller.",
-        202,
-        "Inception",
-        "Christopher Nolan",
-        std::vector<std::string>{
-            "Leonardo DiCaprio",
-            "Joseph Gordon-Levitt",
-            "Elliot Page"
-        }
-    );
-
-    MagazineCreator magazine_creator(
-        "National Geographic",
-        "Science and nature magazine.",
-        303,
-        47,
-        "The Last Ocean"
-    );
-
-    BookCreator second_book_creator(
-        "Clean Code",
-        "A book about writing maintainable software.",
-        404,
-        "Clean Code",
-        "Robert C. Martin",
-        2008
-    );
-
     std::cout << "=== Add Items ===\n";
-    print_result("Add book to [0][0]", library_storage.add_item(book_creator.create_item(), {0U, 0U}));
-    print_result("Add movie to [1][5]", library_storage.add_item(movie_creator.create_item(), {1U, 5U}));
+    print_result(
+        "Add book to [0][0]",
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Book>(
+                "The Great Gatsby",
+                "A novel set in the Jazz Age.",
+                101,
+                "The Great Gatsby",
+                "F. Scott Fitzgerald",
+                1925
+            ),
+            {0U, 0U}
+        )
+    );
+    print_result(
+        "Add movie to [1][5]",
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Movie>(
+                "Inception",
+                "A mind-bending thriller.",
+                202,
+                "Inception",
+                "Christopher Nolan",
+                std::vector<std::string>{
+                    "Leonardo DiCaprio",
+                    "Joseph Gordon-Levitt",
+                    "Elliot Page"
+                }
+            ),
+            {1U, 5U}
+        )
+    );
     print_result(
         "Add magazine to [2][4]",
-        library_storage.add_item(magazine_creator.create_item(), {2U, 4U})
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Magazine>(
+                "National Geographic",
+                "Science and nature magazine.",
+                303,
+                47,
+                "The Last Ocean"
+            ),
+            {2U, 4U}
+        )
     );
     print_result(
         "Add second book to [0][1]",
-        library_storage.add_item(second_book_creator.create_item(), {0U, 1U})
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Book>(
+                "Clean Code",
+                "A book about writing maintainable software.",
+                404,
+                "Clean Code",
+                "Robert C. Martin",
+                2008
+            ),
+            {0U, 1U}
+        )
     );
     print_result(
         "Add item to occupied [0][0]",
-        library_storage.add_item(book_creator.create_item(), {0U, 0U})
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Book>(
+                "The Great Gatsby",
+                "A novel set in the Jazz Age.",
+                101,
+                "The Great Gatsby",
+                "F. Scott Fitzgerald",
+                1925
+            ),
+            {0U, 0U}
+        )
     );
     print_result(
         "Add item to invalid [4][2]",
-        library_storage.add_item(book_creator.create_item(), {4U, 2U})
+        library_storage.add_item(
+            ItemFactory::instance().create_item<Book>(
+                "The Great Gatsby",
+                "A novel set in the Jazz Age.",
+                101,
+                "The Great Gatsby",
+                "F. Scott Fitzgerald",
+                1925
+            ),
+            {4U, 2U}
+        )
     );
 
     std::cout << "\n=== Direct Access Demo ===\n";
