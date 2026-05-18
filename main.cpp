@@ -1,64 +1,137 @@
+#include "compartment_location.h"
+#include "item_creator.h"
+#include "library_storage.h"
+
 #include <iostream>
-#include "Item.h"
-#include "Book.h"
-#include "Movie.h"
-#include "Magazine.h"
-#include "Compartment.h"
+#include <stdexcept>
+#include <string>
+#include <vector>
 
-// ============================================================
-//  Part 1 Test Driver
-//  Demonstrates construction and << output for all three item types.
-//  Also shows polymorphism via base class pointer (Item*).
-// ============================================================
-int main() {
+void print_result(const std::string& action_name, const OperationResult& operation_result)
+{
+    std::cout
+        << action_name
+        << ": "
+        << (operation_result.success ? "SUCCESS" : "FAILURE")
+        << " - "
+        << operation_result.message
+        << "\n";
+}
 
-    // --- Construct a Book ---
-    Book book(
-        "The Great Gatsby",                          // name
-        "A novel set in the Jazz Age",               // description
-        101,                                         // id
-        "The Great Gatsby",                          // title
-        "F. Scott Fitzgerald",                       // author
-        1925                                         // copyrightDate
+int main()
+{
+    LibraryStorage library_storage(3U);
+
+    BookCreator book_creator(
+        "The Great Gatsby",
+        "A novel set in the Jazz Age.",
+        101,
+        "The Great Gatsby",
+        "F. Scott Fitzgerald",
+        1925
     );
 
-    // --- Construct a Movie ---
-    Movie movie(
-        "Inception",                                 // name
-        "A mind-bending thriller",                   // description
-        202,                                         // id
-        "Inception",                                 // title
-        "Christopher Nolan",                         // director
-        {"Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"} // mainActors
+    MovieCreator movie_creator(
+        "Inception",
+        "A mind-bending thriller.",
+        202,
+        "Inception",
+        "Christopher Nolan",
+        std::vector<std::string>{
+            "Leonardo DiCaprio",
+            "Joseph Gordon-Levitt",
+            "Elliot Page"
+        }
     );
 
-    // --- Construct a Magazine ---
-    Magazine magazine(
-        "National Geographic",                       // name
-        "Science and nature magazine",               // description
-        303,                                         // id
-        47,                                          // edition
-        "The Last Ocean"                             // mainArticleTitle
+    MagazineCreator magazine_creator(
+        "National Geographic",
+        "Science and nature magazine.",
+        303,
+        47,
+        "The Last Ocean"
     );
 
-    std::cout << "=== Direct Object Output via << ===\n\n";
+    BookCreator second_book_creator(
+        "Clean Code",
+        "A book about writing maintainable software.",
+        404,
+        "Clean Code",
+        "Robert C. Martin",
+        2008
+    );
 
-    // operator<< calls print() on each concrete type directly
-    std::cout << book     << "\n";
-    std::cout << movie    << "\n";
-    std::cout << magazine << "\n";
+    std::cout << "=== Add Items ===\n";
+    print_result("Add book to [0][0]", library_storage.add_item(book_creator.create_item(), {0U, 0U}));
+    print_result("Add movie to [1][5]", library_storage.add_item(movie_creator.create_item(), {1U, 5U}));
+    print_result(
+        "Add magazine to [2][4]",
+        library_storage.add_item(magazine_creator.create_item(), {2U, 4U})
+    );
+    print_result(
+        "Add second book to [0][1]",
+        library_storage.add_item(second_book_creator.create_item(), {0U, 1U})
+    );
+    print_result(
+        "Add item to occupied [0][0]",
+        library_storage.add_item(book_creator.create_item(), {0U, 0U})
+    );
+    print_result(
+        "Add item to invalid [4][2]",
+        library_storage.add_item(book_creator.create_item(), {4U, 2U})
+    );
 
-    // --- Polymorphism Demo ---
-    // Store all three items as base class pointers.
-    // operator<< still dispatches to the correct print() override
-    // because print() is virtual — this is runtime polymorphism.
-    std::cout << "=== Polymorphic Output via Item* ===\n\n";
-
-    Item* items[] = { &book, &movie, &magazine };
-
-    for (const Item* item : items) {
-        std::cout << *item << "\n";
+    std::cout << "\n=== Direct Access Demo ===\n";
+    const Item* item_at_target_location = library_storage[2U][4U].get_item();
+    if (item_at_target_location != nullptr)
+    {
+        std::cout << "Item at library_storage[2][4]:\n" << *item_at_target_location << "\n";
     }
+
+    std::cout << "Attempting library_storage[9][0]...\n";
+    try
+    {
+        library_storage[9U][0U];
+        std::cout << "Unexpected success.\n";
+    }
+    catch (const std::out_of_range& exception)
+    {
+        std::cout << "Caught out_of_range: " << exception.what() << "\n";
+    }
+
+    std::cout << "\n=== Checkout Operations ===\n";
+    print_result(
+        "Checkout [2][4]",
+        library_storage.check_out_item({2U, 4U}, "Alice Johnson", "2026-06-01")
+    );
+    print_result(
+        "Checkout [2][4] again",
+        library_storage.check_out_item({2U, 4U}, "Bob Smith", "2026-06-15")
+    );
+    print_result(
+        "Checkout empty [2][10]",
+        library_storage.check_out_item({2U, 10U}, "Charlie", "2026-06-20")
+    );
+
+    std::cout << "\n=== Storage Reports After Checkout ===\n";
+    library_storage.print_items_in_storage(std::cout);
+    std::cout << "\n";
+    library_storage.print_checked_out_items(std::cout);
+
+    std::cout << "\n=== Checkin Operations ===\n";
+    print_result("Checkin [2][4]", library_storage.check_in_item({2U, 4U}));
+    print_result("Checkin empty [2][10]", library_storage.check_in_item({2U, 10U}));
+    print_result("Checkin already stored [2][4]", library_storage.check_in_item({2U, 4U}));
+
+    std::cout << "\n=== Swap Operations ===\n";
+    print_result("Swap [0][0] with [1][5]", library_storage.swap_items({0U, 0U}, {1U, 5U}));
+    print_result("Swap [0][0] with empty [1][6]", library_storage.swap_items({0U, 0U}, {1U, 6U}));
+    print_result("Swap [0][0] with itself", library_storage.swap_items({0U, 0U}, {0U, 0U}));
+
+    std::cout << "\n=== Final Storage Reports ===\n";
+    library_storage.print_items_in_storage(std::cout);
+    std::cout << "\n";
+    library_storage.print_checked_out_items(std::cout);
 
     return 0;
 }
