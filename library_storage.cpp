@@ -140,7 +140,7 @@ void LibraryStorage::print_items_in_storage(std::ostream& output_stream) const
             ++compartment_index
         )
         {
-            const Compartment& compartment = shelf[compartment_index];
+            const Compartment& compartment = shelf.get_compartment(compartment_index);
             if (!compartment.is_empty() && !compartment.is_checked_out())
             {
                 found_checked_in_item = true;
@@ -176,7 +176,7 @@ void LibraryStorage::print_checked_out_items(std::ostream& output_stream) const
             ++compartment_index
         )
         {
-            const Compartment& compartment = shelf[compartment_index];
+            const Compartment& compartment = shelf.get_compartment(compartment_index);
             if (!compartment.is_empty() && compartment.is_checked_out())
             {
                 found_checked_out_item = true;
@@ -216,10 +216,10 @@ std::string LibraryStorage::format_location(const CompartmentLocation& location)
 
 Compartment& LibraryStorage::get_compartment(const CompartmentLocation& location)
 {
-    return _shelves[location.shelf_index][location.compartment_index];
+    return _shelves[location.shelf_index].get_compartment(location.compartment_index);
 }
 
 const Compartment& LibraryStorage::get_compartment(const CompartmentLocation& location) const
 {
-    return _shelves[location.shelf_index][location.compartment_index];
+    return _shelves[location.shelf_index].get_compartment(location.compartment_index);
 }

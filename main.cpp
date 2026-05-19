@@ -115,16 +115,23 @@ int main()
     );
 
     std::cout << "\n=== Direct Access Demo ===\n";
-    const Item* item_at_target_location = library_storage[2U][4U].get_item();
-    if (item_at_target_location != nullptr)
-    {
-        std::cout << "Item at library_storage[2][4]:\n" << *item_at_target_location << "\n";
-    }
+    std::cout << "Item at library_storage[2][4]:\n" << library_storage[2U][4U] << "\n";
 
     std::cout << "Attempting library_storage[9][0]...\n";
     try
     {
         library_storage[9U][0U];
+        std::cout << "Unexpected success.\n";
+    }
+    catch (const std::out_of_range& exception)
+    {
+        std::cout << "Caught out_of_range: " << exception.what() << "\n";
+    }
+
+    std::cout << "Attempting library_storage[0][15]...\n";
+    try
+    {
+        library_storage[0U][15U];
         std::cout << "Unexpected success.\n";
     }
     catch (const std::out_of_range& exception)
